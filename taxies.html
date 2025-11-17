@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="kk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexRide — Taxies (Interactive)</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity=""
+      crossorigin=""
+    />
+
+    <style>
+      :root {
+        --bg: #0d0d11;
+        --card: #121216;
+        --accent: #7c3aed;
+        --accent2: #5b21b6;
+        --muted: #9ca3af;
+        --text: #fff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto;
+        background: radial-gradient(circle at top, #14121a, #0d0d11);
+        color: var(--text);
+        margin: 0;
+      }
+
+      /* Navbar */
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 60;
+        backdrop-filter: blur(8px);
+        background: rgba(6, 6, 10, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo .mark {
+        width: 44px;
+        height: 44;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+      }
+      .logo .title {
+        font-weight: 700;
+        font-size: 18px;
+      }
+      .nav-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .btn {
+        padding: 9px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      /* Layout */
+      .wrap {
+        max-width: 1200px;
+        margin: 28px auto;
+        padding: 0 18px;
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 22px;
+        align-items: start;
+      }
+
+      /* Map */
+      #map {
+        height: 720px;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(2, 6, 23, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+      }
+
+      /* Side panel */
+      .panel {
+        background: linear-gradient(180deg, #0f0f13, #0b0b0d);
+        padding: 18px;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+        height: 720px;
+        overflow: auto;
+      }
+
+      .search {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .search input {
+        flex: 1;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text);
+      }
+
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .chip {
+        padding: 8px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.03);
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .chip.active {
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        color: #fff;
+        border-color: rgba(124, 58, 237, 0.3);
+      }
+
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .controls .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .card {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+        border-radius: 12px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          transparent
+        );
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        transition: transform 0.18s, box-shadow 0.18s;
+      }
+      .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 40px rgba(2, 6, 23, 0.6);
+      }
+      .thumb {
+        width: 84px;
+        height: 56px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .meta {
+        flex: 1;
+      }
+      .meta h4 {
+        margin: 0;
+        font-size: 16px;
+      }
+      .meta p {
+        margin: 4px 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .meta .rating {
+        font-weight: 700;
+      }
+
+      .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+      }
+      .badge {
+        padding: 6px 10px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .online {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.08);
+      }
+      .offline {
+        background: rgba(107, 114, 128, 0.09);
+        color: #9ca3af;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .small-btn {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        color: var(--accent);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      /* Floating controls on map */
+      .map-controls {
+        position: absolute;
+        left: 32px;
+        top: 110px;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .map-card {
+        background: linear-gradient(180deg, #0f0f13, #0b0b0d);
+        padding: 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+      }
+
+      /* Animations */
+      .fade-up {
+        opacity: 0;
+        transform: translateY(8px);
+        animation: fadeUp 0.6s ease forwards;
+      }
+      .fade-up.delay-1 {
+        animation-delay: 0.06s;
+      }
+      .fade-up.delay-2 {
+        animation-delay: 0.12s;
+      }
+      @keyframes fadeUp {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .wrap {
+          grid-template-columns: 1fr 360px;
+        }
+        #map {
+          height: 640px;
+        }
+        .panel {
+          height: 640px;
+        }
+      }
+      @media (max-width: 800px) {
+        .wrap {
+          grid-template-columns: 1fr;
+          padding: 0 12px;
+        }
+        #map {
+          height: 520px;
+        }
+        .panel {
+          height: auto;
+          margin-top: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="logo">
+        <div class="mark">NR</div>
+        <div class="title">NexRide</div>
+      </div>
+      <div class="nav-actions">
+        <a class="btn" href="gh.html">Home</a>
+        <a class="btn" href="signin.html">Sign In</a>
+        <a class="btn" href="takeorder.html">Take Order</a>
+        <a class="btn" href="taxies.html">Taxies</a>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div style="position: relative">
+        <div id="map"></div>
+
+        <div class="map-controls">
+          <div class="map-card fade-up delay-1">
+            <strong>Map mode</strong>
+            <div style="margin-top: 8px; display: flex; gap: 8px">
+              <button class="small-btn" id="btnShowAll">Show all</button>
+              <button class="small-btn" id="btnClusters">Clusters</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel fade-up delay-2" aria-label="Drivers panel">
+        <div class="search">
+          <input id="search" placeholder="Іздеу (жүргізуші, модель, орын)" />
+          <button class="btn" id="refresh">Refresh</button>
+        </div>
+
+        <div class="filters">
+          <div class="chip active" data-filter="all">Барлығы</div>
+          <div class="chip" data-filter="online">Online</div>
+          <div class="chip" data-filter="offline">Offline</div>
+          <div class="chip" data-filter="lux">Люкс</div>
+          <div class="chip" data-filter="ev">Электро</div>
+          <div class="chip" data-filter="high-rating">Rating ≥ 4.8</div>
+        </div>
+
+        <div class="controls">
+          <div class="muted">Жүргізушілер: <span id="count">0</span></div>
+          <div class="muted">Last: <span id="lastUpdated">—</span></div>
+        </div>
+
+        <div class="list" id="list"></div>
+      </aside>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity=""
+      crossorigin=""
+    ></script>
+
+    <script>
+      // --- Mock data --- (replace this with real API data)
+      const drivers = [
+        {
+          id: 1,
+          name: "Амангелді",
+          car: "Toyota Camry 70",
+          lat: 43.2389,
+          lon: 76.8897,
+          rating: 4.8,
+          online: true,
+          type: "classic",
+          img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=60",
+        },
+        {
+          id: 2,
+          name: "Бекзат",
+          car: "Hyundai Sonata",
+          lat: 43.245,
+          lon: 76.92,
+          rating: 4.6,
+          online: false,
+          type: "classic",
+          img: "https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=900&q=60",
+        },
+        {
+          id: 3,
+          name: "Руслан",
+          car: "Kia Optima",
+          lat: 43.251,
+          lon: 76.931,
+          rating: 4.9,
+          online: true,
+          type: "lux",
+          img: "https://images.unsplash.com/photo-1616421708595-4237fc39f3d0?auto=format&fit=crop&w=900&q=60",
+        },
+        {
+          id: 4,
+          name: "Ерасыл",
+          car: "Tesla Model 3",
+          lat: 43.233,
+          lon: 76.88,
+          rating: 5.0,
+          online: true,
+          type: "ev",
+          img: "https://images.unsplash.com/photo-1616788074320-68cf0c8e69a1?auto=format&fit=crop&w=900&q=60",
+        },
+        {
+          id: 5,
+          name: "Жанна",
+          car: "Mercedes E",
+          lat: 43.26,
+          lon: 76.92,
+          rating: 4.7,
+          online: true,
+          type: "lux",
+          img: "https://images.unsplash.com/photo-1511391405406-df1ad6f0c8a7?auto=format&fit=crop&w=900&q=60",
+        },
+      ];
+
+      // --- Map init ---
+      const map = L.map("map", { zoomControl: false }).setView(
+        [43.2389, 76.8897],
+        13
+      );
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "",
+        maxZoom: 19,
+      }).addTo(map);
+
+      // marker layer
+      const markers = L.layerGroup().addTo(map);
+
+      function createMarker(d) {
+        const el = document.createElement("div");
+        el.style.width = "36px";
+        el.style.height = "36px";
+        el.style.borderRadius = "12px";
+        el.style.display = "flex";
+        el.style.alignItems = "center";
+        el.style.justifyContent = "center";
+        el.style.color = "#fff";
+        el.style.fontWeight = "700";
+        el.style.boxShadow = "0 6px 18px rgba(0,0,0,0.35)";
+        el.style.background = d.online
+          ? "linear-gradient(90deg,var(--accent),var(--accent2))"
+          : "linear-gradient(90deg,#666,#444)";
+        el.innerText = d.name.slice(0, 2).toUpperCase();
+        return L.marker([d.lat, d.lon], {
+          icon: L.divIcon({ className: "", html: el, iconSize: [36, 36] }),
+        }).bindPopup(
+          `<strong>${d.name}</strong><br>${d.car}<br>Rating: ${d.rating}`
+        );
+      }
+
+      function renderMarkers(list) {
+        markers.clearLayers();
+        list.forEach((d) => createMarker(d).addTo(markers));
+      }
+
+      // --- List rendering and filtering ---
+      const listEl = document.getElementById("list");
+      const countEl = document.getElementById("count");
+      const lastEl = document.getElementById("lastUpdated");
+
+      function renderList(data) {
+        listEl.innerHTML = "";
+        data.forEach((d) => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+          <div class="thumb"><img src="${d.img}" alt="${d.car}"/></div>
+          <div class="meta">
+            <h4>${d.car}</h4>
+            <p>${d.name} • ${d.type.toUpperCase()}</p>
+            <p class="rating">Rating: ${d.rating}</p>
+          </div>
+          <div class="stat">
+            <div class="badge ${d.online ? "online" : "offline"}">${
+            d.online ? "Online" : "Offline"
+          }</div>
+            <div class="actions">
+              <button class="small-btn" data-id="${d.id}" onclick="zoomTo(${
+            d.id
+          })">Zoom</button>
+              <button class="small-btn" data-id="${d.id}" onclick="order(${
+            d.id
+          })">Order</button>
+            </div>
+          </div>
+        `;
+          listEl.appendChild(card);
+        });
+        countEl.textContent = data.length;
+        lastEl.textContent = new Date().toLocaleTimeString();
+      }
+
+      function zoomTo(id) {
+        const d = drivers.find((x) => x.id === id);
+        if (d) {
+          map.setView([d.lat, d.lon], 15, { animate: true });
+        }
+      }
+
+      function order(id) {
+        const d = drivers.find((x) => x.id === id);
+        if (!d) return alert("Driver not found");
+        const ok = confirm(`Order ${d.car} — ${d.name}?`);
+        if (ok) alert("Тапсырыс жіберілді — жүргізушіге хабарланады (демо).");
+      }
+
+      // --- Filters UI ---
+      const chips = document.querySelectorAll(".chip");
+      let activeFilter = "all";
+      chips.forEach((ch) =>
+        ch.addEventListener("click", () => {
+          chips.forEach((c) => c.classList.remove("active"));
+          ch.classList.add("active");
+          activeFilter = ch.dataset.filter;
+          applyFilters();
+        })
+      );
+
+      document.getElementById("search").addEventListener("input", applyFilters);
+      document.getElementById("refresh").addEventListener("click", () => {
+        fetchUpdates(true);
+      });
+
+      function applyFilters() {
+        const q = document.getElementById("search").value.trim().toLowerCase();
+        let res = drivers.slice();
+        if (activeFilter === "online") res = res.filter((d) => d.online);
+        if (activeFilter === "offline") res = res.filter((d) => !d.online);
+        if (activeFilter === "lux") res = res.filter((d) => d.type === "lux");
+        if (activeFilter === "ev") res = res.filter((d) => d.type === "ev");
+        if (activeFilter === "high-rating")
+          res = res.filter((d) => d.rating >= 4.8);
+        if (q)
+          res = res.filter((d) => (d.name + d.car).toLowerCase().includes(q));
+        renderList(res);
+        renderMarkers(res);
+      }
+
+      // --- Mock live updates ---
+      function fetchUpdates(force = false) {
+        // Placeholder: replace with fetch('/api/drivers') and proper auth
+        // Simulate small state changes
+        drivers.forEach((d) => {
+          // random small movement
+          d.lat += (Math.random() - 0.5) * 0.002;
+          d.lon += (Math.random() - 0.5) * 0.002;
+          // toggle online randomly
+          if (Math.random() > 0.85) d.online = !d.online;
+        });
+        applyFilters();
+      }
+
+      // initial render
+      applyFilters();
+
+      // poll for updates every 8 seconds (in real app, use websockets or server-sent events)
+      setInterval(fetchUpdates, 8000);
+
+      // buttons
+      document.getElementById("btnShowAll").addEventListener("click", () => {
+        map.fitBounds(markers.getBounds(), { padding: [60, 60] });
+      });
+      document.getElementById("btnClusters").addEventListener("click", () => {
+        alert("Clusters demo — интеграция үшін Leaflet.markercluster қосыңыз.");
+      });
+
+      // expose some functions to global for inline handlers
+      window.zoomTo = zoomTo;
+      window.order = order;
+    </script>
+  </body>
+</html>

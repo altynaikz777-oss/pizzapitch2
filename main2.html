@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <title>ИИ Такси</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .container {
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button {
+      background-color: #00ffcc;
+      color: #000;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00e6b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ИИ форматындағы Такси</h1>
+    <p>Жасанды интеллектпен басқарылатын қауіпсіз және тиімді такси жүйесі</p>
+    <button onclick="orderTaxi()">Такси шақыру</button>
+    <div id="status" style="margin-top: 20px; font-size: 18px;"></div>
+  </div>
+
+  <script>
+    function orderTaxi() {
+      const status = document.getElementById("status");
+      status.innerText = "Жи маршрутты есептеп жатыр...";
+      setTimeout(() => {
+        status.innerText = "Такси жолда! 🚕";
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

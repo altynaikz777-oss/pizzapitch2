@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <title>ИИ Такси</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0f0f0f;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Навигация */
+    .navbar {
+      background-color: #1c1c1c;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+    }
+
+    .navbar h2 {
+      color: #00ffcc;
+      font-size: 24px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav-buttons button {
+      background-color: #00ffcc;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-buttons button:hover {
+      background-color: #00e6b8;
+    }
+
+    /* Контент */
+    .container {
+      max-width: 600px;
+      margin: 60px auto;
+      background-color: #1c1c1c;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #00ffcc;
+    }
+
+    p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      color: #cccccc;
+    }
+
+    .main-btn {
+      background-color: #00ffcc;
+      color: #000;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .main-btn:hover {
+      background-color: #00e6b8;
+    }
+
+    #status {
+      margin-top: 30px;
+      font-size: 20px;
+      color: #ffffff;
+    }
+
+    .loading {
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Навигация -->
+  <div class="navbar">
+    <h2>NexRide</h2>
+    <div class="nav-buttons">
+      <button><a href = ''>Home</a></button>
+      <button><a href = ''>Log In</a></button>
+      <button><a href = ''>Take Order</a></button>
+      <button><a href = ''>Taxies</a></button>
+    </div>
+  </div>
+
+  <!-- Контент -->
+  <div class="container">
+    <h1>ЖИ форматындағы такси платформасы</h1>
+    <p>Жасанды интеллектпен басқарылатын қауіпсіз және тиімді такси жүйесі</p>
+    <button class="main-btn" onclick="orderTaxi()">🚕 Такси шақыру</button>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    function orderTaxi() {
+      const status = document.getElementById("status");
+      status.classList.add("loading");
+      status.innerText = "Driver маршрутты есептеп жатыр...";
+      
+      setTimeout(() => {
+        status.classList.remove("loading");
+        status.innerText = "Driver жолда! 🚖";
+      }, 2500);
+    }
+  </script>
+
+</body>
+</html>
+</body>
+</html>

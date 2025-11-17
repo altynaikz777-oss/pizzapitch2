@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="kk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexRide — Sign In</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg: #0d0d11;
+        --card: #16161d;
+        --accent: #7c3aed;
+        --accent2: #5b21b6;
+        --text: #ffffff;
+        --muted: #9ca3af;
+        --radius: 18px;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: radial-gradient(circle at top, #1a1a23, #0d0d11);
+        font-family: "Inter", sans-serif;
+        color: var(--text);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .card {
+        width: 380px;
+        background: var(--card);
+        padding: 40px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        animation: fadeIn 0.8s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .logo {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 25px;
+      }
+
+      .logo-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 26px;
+        margin-bottom: 25px;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 18px;
+      }
+
+      .input-group label {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .input-group input {
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        background: #0f0f14;
+        color: var(--text);
+        font-size: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: 0.25s;
+      }
+
+      .input-group input:focus {
+        border-color: var(--accent);
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+      }
+
+      .extra-links {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 14px;
+      }
+
+      .extra-links a {
+        color: var(--accent);
+        text-decoration: none;
+        transition: 0.3s;
+      }
+
+      .extra-links a:hover {
+        color: var(--accent2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">
+        <div class="logo-icon">NR</div>
+      </div>
+
+      <h1>Қош келдіңіз</h1>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" placeholder="example@mail.com" />
+      </div>
+
+      <div class="input-group">
+        <label>Құпия сөз</label>
+        <input type="password" placeholder="••••••••" />
+      </div>
+
+      <button class="submit-btn">Кіру</button>
+
+      <div class="extra-links">
+        <p><a href="#">Құпия сөзді ұмыттыңыз ба?</a></p>
+        <p>Аккаунтыңыз жоқ па? <a href="#">Тіркелу</a></p>
+      </div>
+    </div>
+  </body>
+</html>
